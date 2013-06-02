@@ -1,14 +1,107 @@
 Source: xbmc
 Section: video
 Priority: optional
-Maintainer: Debian XBMC Packaging Team <pkg-xbmc-maintainers@lists.alioth.debian.org>
-Uploaders: Andres Mejia <amejia@debian.org>,
-           wsnipex <wsnipex@xbmc.org>
-Build-Depends: #BUILD_DEPENDS#
-Standards-Version: 3.9.3
+Maintainer: wsnipex <wsnipex@xbmc.org>
+DM-Upload-Allowed: yes
+Build-Depends: debhelper (>= 7.0.50~),
+ python-support,
+ cmake,
+ autopoint | gettext,
+ autotools-dev,
+ autoconf,
+ automake,
+ unzip,
+ libboost-dev,
+ zip,
+ libtool,
+ libgles2-mesa-dev [armel] | libgl1-mesa-dev | libgl-dev,
+ libglu1-mesa-dev | libglu-dev,
+ libglew-dev,
+ libmad0-dev,
+ libjpeg-dev,
+ libsamplerate-dev,
+ libogg-dev,
+ libvorbis-dev,
+ libmp3lame-dev,
+ libfreetype6-dev,
+ libfontconfig-dev,
+ libbz2-dev,
+ libfribidi-dev,
+ libsqlite3-dev,
+ libmysqlclient-dev,
+ libasound2-dev | libasound-dev,
+ libpng12-dev | libpng-dev,
+ libpcre3-dev,
+ liblzo2-dev,
+ libcdio-dev,
+ libsdl-dev,
+ libsdl-image1.2-dev,
+ libsdl-mixer1.2-dev,
+ libenca-dev,
+ libjasper-dev,
+ libxt-dev,
+ libxmu-dev,
+ libcurl4-gnutls-dev | libcurl-dev,
+ libdbus-1-dev,
+ libpulse-dev,
+ libavahi-common-dev,
+ libavahi-client-dev,
+ libxrandr-dev,
+ libmpeg2-4-dev,
+ libass-dev (>= 0.9.8),
+ libflac-dev,
+ python-dev,
+ gawk,
+ gperf,
+ nasm [!amd64],
+ yasm,
+ libcwiid-dev,
+ libbluetooth-dev,
+ zlib1g-dev,
+ libsmbclient-dev,
+ libiso9660-dev,
+ libssl-dev,
+ lsb-release,
+ libmicrohttpd-dev,
+ libmodplug-dev,
+ librtmp-dev,
+ curl,
+ libyajl-dev,
+ libboost-thread-dev,
+ gdc,
+ fpc,
+ cvs,
+ libomxil-bellagio-dev [armel],
+ python-imaging,
+ libplist-dev,
+ libhal-storage-dev,
+ libcec-dev (>= 2.1),
+ libcec2 (>= 2.1),
+ libudev-dev,
+ libafpclient-dev,
+ libshairplay-dev,
+ libnfs-dev,
+ libbluray-dev,
+ libtinyxml-dev,
+ libvdpau-dev,
+ libcrystalhd-dev,
+ swig,
+ libssh-dev,
+ default-jre | openjdk-6-jre | openjdk-7-jre,
+ libtag1x8 | libtag-dev (>= 1.8) | libtag1-dev (>= 1.8),
+ libtiff4-dev | libtiff-dev,
+ libva-dev,
+ libltdl-dev,
+ libavcodec-dev,
+ libavfilter-dev,
+ libavformat-dev,
+ libavutil-dev,
+ libpostproc-dev,
+ libswscale-dev,
+Standards-Version: 3.9.2
 Homepage: http://xbmc.org/
-Vcs-Git: git://github.com/xbmc/xbmc-packaging.git
-Vcs-Browser: https://github.com/xbmc/xbmc-packaging
+Vcs-Git: git://github.com/xbmc/xbmc.git
+Vcs-Browser: https://github.com/xbmc/xbmc
 
 Package: xbmc
 Architecture: all
@@ -39,7 +132,8 @@ Depends: xbmc-bin (>= ${source:Version}),
 Suggests: xbmc-test-helper,
          libva-intel-vaapi-driver,
          libva1
-Recommends: libvdpau1,
+Recommends: python-qt3,
+         libvdpau1,
          xbmc-pvr-mythtv-cmyth,
          xbmc-pvr-vuplus,
          xbmc-pvr-vdr-vnsi,
@@ -76,7 +170,7 @@ Description: XBMC Media Center (arch-independent data package)
  working XBMC.
 
 Package: xbmc-bin
-Architecture: i386 amd64 armhf
+Architecture: i386 amd64 powerpc ppc64 armel
 Depends: ${shlibs:Depends},
          ${misc:Depends}
 Recommends: ${shlibs:Recommends}
@@ -152,7 +246,7 @@ Description: XBMC Media Center (Event Client Dev package)
  This is the Development package for XBMC Event Client.
 
 Package: xbmc-eventclients-wiiremote
-Architecture: i386 amd64 armhf
+Architecture: i386 amd64 powerpc ppc64 armel
 Depends: xbmc-eventclients-common (= ${source:Version}),
          ${shlibs:Depends},
          ${misc:Depends}
