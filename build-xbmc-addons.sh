@@ -87,16 +87,25 @@ function prepareBuild {
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
         wget $url
         tar xzf ${BRANCH}.tar.gz
-        PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
-        PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addon}-${BRANCH}/${addon}/addon.xml)
+        getPackageDetails
         mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
         cd ${addon}-${BRANCH} 
         sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
         buildDebianPackages
         cd .. && uploadPkg
-        #rm -rf $addon.tmp
     done
+}
 
+function getPackageDetails {
+    PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
+    if [ -f ${addon}-${BRANCH}/${addon}/addon.xml ]
+    then
+        PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addon}-${BRANCH}/${addon}/addon.xml)
+    else
+        # some addons don't follow the file system structure 100%, try our best to find an addon.xml
+        PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); VER=$2} END {print VER}' ${addon}-${BRANCH}/${addon:0:5}*/addon.xml)
+    fi
+    [[ -z $PACKAGEVERSION ]] && echo "Error: could not determine version of $addon" && break
 }
 
 function uploadPkg {
