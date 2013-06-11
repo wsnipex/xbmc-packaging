@@ -11,6 +11,7 @@ PDEBUILD_OPTS=${PDEBUILD_OPTS:-""}
 PBUILDER_BASE=${PBUILDER_BASE:-"/var/cache/pbuilder"}
 DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
+URGENCY=${URGENCY:-"low"}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 
 declare -A ALL_ADDONS=(
@@ -63,7 +64,7 @@ function buildDebianPackages {
     for dist in $DISTS
     do
         sed "s/#DIST#/${dist}/g" debian/changelog.tmp > debian/changelog
-        dch --release  ""
+        dch --release -u $URGENCY ""
         for arch in $ARCHS
         do
             echo "building: DIST=$dist ARCH=$arch"
