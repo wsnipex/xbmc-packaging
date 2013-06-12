@@ -71,7 +71,7 @@ function buildDebianPackages {
             if [[ "$BUILDER" =~ "pdebuild" ]]
             then
                 DIST=$dist ARCH=$arch $BUILDER $PDEBUILD_OPTS
-                [ $? -eq 0 ] || exit 1
+                [ $? -eq 0 ] && uploadPkg || exit 1
             else
                 $BUILDER $DEBUILD_OPTS
             fi
@@ -93,7 +93,7 @@ function prepareBuild {
         cd ${addon}-${BRANCH} 
         sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
         buildDebianPackages
-        cd .. && uploadPkg
+        [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
     done
 }
 
@@ -110,9 +110,9 @@ function getPackageDetails {
 }
 
 function uploadPkg {
-    local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}*.changes"
     if [[ "$BUILDER" =~ "pdebuild" ]]
     then
+        local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}~${dist}_${arch}.changes"
         PKG="${PBUILDER_BASE}/${dist}-${arch}/result/${changes}"
         echo "signing package"
         debsign $PKG
@@ -121,6 +121,7 @@ function uploadPkg {
         UPLOAD_DONE=$?
     elif [[ "$PPA_UPLOAD" == "True" ]]
     then
+        local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}*.changes"
         echo "uploading $changes to $DPUT_TARGET"
         dput $DPUT_TARGET $changes
         UPLOAD_DONE=$?
