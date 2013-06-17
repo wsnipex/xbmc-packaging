@@ -60,25 +60,6 @@ function checkEnv {
     echo "#-------------------------------#"
 }
 
-function buildDebianPackages {
-    for dist in $DISTS
-    do
-        sed "s/#DIST#/${dist}/g" debian/changelog.tmp > debian/changelog
-        dch --release -u $URGENCY ""
-        for arch in $ARCHS
-        do
-            echo "building: DIST=$dist ARCH=$arch"
-            if [[ "$BUILDER" =~ "pdebuild" ]]
-            then
-                DIST=$dist ARCH=$arch $BUILDER $PDEBUILD_OPTS
-                [ $? -eq 0 ] && uploadPkg || exit 1
-            else
-                $BUILDER $DEBUILD_OPTS
-            fi
-        done
-    done
-} 
-
 function prepareBuild {
     for addon in ${ADDONS[*]}
     do
@@ -109,6 +90,26 @@ function getPackageDetails {
     [[ -z $PACKAGEVERSION ]] && echo "Error: could not determine version of $addon" && break
 }
 
+function buildDebianPackages {
+    for dist in $DISTS
+    do
+        sed "s/#DIST#/${dist}/g" debian/changelog.tmp > debian/changelog
+        dch --release -u $URGENCY ""
+        for arch in $ARCHS
+        do
+            echo "building: DIST=$dist ARCH=$arch"
+            if [[ "$BUILDER" =~ "pdebuild" ]]
+            then
+                DIST=$dist ARCH=$arch $BUILDER $PDEBUILD_OPTS
+                [ $? -eq 0 ] && uploadPkg || exit 1
+            else
+                $BUILDER $DEBUILD_OPTS
+                [ $? -eq 0 ] && [[ "$PPA_UPLOAD" == "True" ]] && createPpaCheckFiles
+            fi
+        done
+    done
+} 
+
 function uploadPkg {
     if [[ "$BUILDER" =~ "pdebuild" ]]
     then
@@ -129,6 +130,16 @@ function uploadPkg {
         echo "Build produced following packages:"
         ls -l *.deb
     fi
+}
+
+function createPpaCheckFiles {
+    local builtpackage
+    mkdir -p $WORK_DIR/watch/$dist
+    grep Package debian/control | sed 's/Package: //g' | while read builtpackage
+    do
+        echo "${PACKAGEVERSION}-${TAG}~${dist}" > $WORK_DIR/watch/${dist}/${builtpackage}
+    done
+
 }
 
 function cleanup {
