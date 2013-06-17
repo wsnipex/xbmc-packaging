@@ -3,6 +3,8 @@
 PPA=${PPA:-"stable"}
 DISTS=${DISTS:-"raring quantal precise"}
 ARCHS=${ARCHS:-"i386 amd64"}
+WORK_DIR=${WORKSPACE:-$(pwd)}
+WATCH=${WATCH:-"$WORK_DIR/watch"}
 
 declare -A PPAS=(
     ["nightly"]='http://ppa.launchpad.net/team-xbmc/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
@@ -11,9 +13,11 @@ declare -A PPAS=(
     ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
 )
 
-function checkVersion {
-    for DIST in $DISTS
-    do
+function checkPpaVersion {
+    declare -A PPA_PACKAGES
+    #for DIST in $DISTS
+    #do
+        #declare -A PPA_PACKAGES_${DIST}
         for ARCH in $ARCHS
         do
             PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$ARCH/")
@@ -22,11 +26,22 @@ function checkVersion {
             do 
                 package=$(echo $line | awk '{print $1}')
                 version=$(echo $line | awk '{print $2}')
-                echo "$package => $version"
+                ${PPA_PACKAGES["$package"]}=$version
             done
+        done
+    #done
+}
+
+function verifyBuild {
+    cd $WATCH || exit 1
+    for DIST in $(ls)
+    do
+        checkPpaVersion
+        cd $DIST || exit 2
+        for package in $(ls)
+        do
+            version=$(cat $package)
         done
     done
 }
-
-checkVersion
 
