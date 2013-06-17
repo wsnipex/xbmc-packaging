@@ -13,35 +13,41 @@ declare -A PPAS=(
     ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
 )
 
+declare -A PPAPACKAGES
+
 function checkPpaVersion {
-    declare -A PPA_PACKAGES
-    #for DIST in $DISTS
-    #do
-        #declare -A PPA_PACKAGES_${DIST}
-        for ARCH in $ARCHS
-        do
-            PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$ARCH/")
-            wget $PACKAGES -O Packages.${PPA}.${DIST}.${ARCH}
-            grep -E "Package|Version" Packages.${PPA}.${DIST}.${ARCH} | sed -e 's/Package: //g' -e 's/Version: //g' | paste - - | while read line
-            do 
-                package=$(echo $line | awk '{print $1}')
-                version=$(echo $line | awk '{print $2}')
-                ${PPA_PACKAGES["$package"]}=$version
-            done
+    
+    for ARCH in $ARCHS
+    do
+        PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$ARCH/")
+        wget $PACKAGES -O Packages.${PPA}.${DIST}.${ARCH} >/dev/null 2>&1
+        while read -r pack vers
+        do 
+            PPAPACKAGES[$pack]=$vers
+        done < <( grep -E "Package|Version" Packages.${PPA}.${DIST}.${ARCH} | sed -e 's/Package: //g' -e 's/Version: //g' | paste - - )
+        #echo "PACKAGES: ${!PPAPACKAGES[*]}"
         done
-    #done
 }
 
 function verifyBuild {
+    local package
+    local version
+
     cd $WATCH || exit 1
-    for DIST in $(ls)
+    for DIST in $DISTS
     do
         checkPpaVersion
-        cd $DIST || exit 2
-        for package in $(ls)
+        [ -d $DIST ] || continue
+        for package in $(ls $DIST/)
         do
-            version=$(cat $package)
+            version=$(cat $DIST/$package)
+            echo "Package: $package - Looking for $version - Version in PPA: ${PPAPACKAGES["$package"]}"
+            if [[ "${PPAPACKAGES["$package"]}" == "$version" ]]
+            then
+                echo "Package $DIST/$package found on PPA - uploading addon.xml"
+            fi
         done
     done
 }
 
+verifyBuild
