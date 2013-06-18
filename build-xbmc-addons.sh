@@ -112,12 +112,14 @@ function buildDebianPackages {
 
 function createPpaCheckFiles {
     local builtpackage
+    local zipname
     local watchfile="$WORK_DIR/watch/${dist}.addon.list"
     mkdir -p $WORK_DIR/watch/${dist}
     grep Package debian/control | sed 's/Package: //g' | while read builtpackage
     do
         echo "${builtpackage} ${PACKAGEVERSION}-${TAG}~${dist}" >> $watchfile
-        [ -d ${builtpackage} ] && zip ${builtpackage}.zip ${builtpackage}/* && mv ${builtpackage}.zip $WORK_DIR/watch/${dist}/
+        zipname=$(echo ${builtpackage} | sed -e "s/xbmc-//" -e "s/-/\./g")
+        [ -d ${zipname} ] && zip ${zipname}.zip ${zipname}/* && mv ${zipname}.zip $WORK_DIR/watch/${dist}/
     done
 
 }
