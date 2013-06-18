@@ -54,7 +54,7 @@ function checkEnv {
         echo "PDEBUILD_OPTS: $PDEBUILD_OPTS"
     else
         echo "DEBUILD_OPTS: $DEBUILD_OPTS"
-        [[ "PPA_UPLOAD" == "True" ]] && echo "PPA_UPLOAD: $PPA_UPLOAD"
+        if [[ "$PPA_UPLOAD" == "True" ]] ; then echo "PPA_UPLOAD: $PPA_UPLOAD"; rm -rf $WORK_DIR/watch >/dev/null 2>&1; fi
     fi
 
     echo "#-------------------------------#"
@@ -108,7 +108,19 @@ function buildDebianPackages {
             fi
         done
     done
-} 
+}
+
+function createPpaCheckFiles {
+    local builtpackage
+    local watchfile="$WORK_DIR/watch/${dist}.addon.list"
+    mkdir -p $WORK_DIR/watch/${dist}
+    grep Package debian/control | sed 's/Package: //g' | while read builtpackage
+    do
+        echo "${builtpackage} ${PACKAGEVERSION}-${TAG}~${dist}" >> $watchfile
+        [ -d ${builtpackage} ] && zip ${builtpackage}.zip ${builtpackage}/* && mv ${builtpackage}.zip $WORK_DIR/watch/${dist}/
+    done
+
+}
 
 function uploadPkg {
     if [[ "$BUILDER" =~ "pdebuild" ]]
@@ -130,16 +142,6 @@ function uploadPkg {
         echo "Build produced following packages:"
         ls -l *.deb
     fi
-}
-
-function createPpaCheckFiles {
-    local builtpackage
-    mkdir -p $WORK_DIR/watch/$dist
-    grep Package debian/control | sed 's/Package: //g' | while read builtpackage
-    do
-        echo "${PACKAGEVERSION}-${TAG}~${dist}" > $WORK_DIR/watch/${dist}/${builtpackage}
-    done
-
 }
 
 function cleanup {
