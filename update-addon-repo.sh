@@ -13,6 +13,12 @@ declare -A PPAS=(
     ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
 )
 
+declare -A REPOS=(
+    ["nightly"]='ftp://nightlyrepo.xbmc.org'
+    ["unstable"]='ftp://unstablerepo.xbmc.org'
+    ["stable"]='ftp://stablerepo.xbmc.org'
+    ["wsnipex-nightly"]='ftp://nightlyrepows.xbmc.org'
+)
 
 declare -A PPAPACKAGES_i386
 declare -A PPAPACKAGES_amd64
@@ -31,33 +37,58 @@ function checkPpaVersion {
 }
 
 function verifyBuild {
-    local package
-    local version
 
     cd $WATCH || exit 1
     for DIST in $DISTS
     do
         checkPpaVersion
-        #[ -d $DIST ] && cd $DIST || continue
         echo ; echo "checking uploads in dist: $DIST"
-        while read package version
+        while read PACKAGE VERSION
         do
-            #version=$(cat $package)
-            echo -n "Package: $package Version: $version PPA_version: ${PPAPACKAGES_i386["$package"]:-"none"}"
-            if [[ "${PPAPACKAGES_i386["$package"]}" == "$version" ]] && [[ "${PPAPACKAGES_amd64["$package"]}" == "$version" ]]
+            echo -n "Package: $PACKAGE Version: $VERSION PPA_VERSION: ${PPAPACKAGES_i386["$PACKAGE"]:-"none"}"
+            if [[ "${PPAPACKAGES_i386["$PACKAGE"]}" == "$VERSION" ]] && [[ "${PPAPACKAGES_amd64["$PACKAGE"]}" == "$VERSION" ]]
             then
-                echo " Upload: success"
+                echo " Upload: verified"
+                zipname=$(echo $PACKAGE | sed -e "s/xbmc-//" -e "s/-/\./g")".zip"
                 uploadAddonXml
+                [[ $UPLOAD_DONE == "True" ]] && removeFromList
             else
                 echo " Upload: failed"
+                checkSuperseded
+                unset PACKAGE VERSION
             fi
         done < <(cat ${DIST}.addon.list)
-        #cd ..
     done
 }
 
 function uploadAddonXml {
-    echo "Uploading addon.zip to xbmc addon repo"
+    UPLOAD_DONE="False"
+    if [ -r $DIST/$zipname ]
+    then
+        echo "Uploading $zipname to ${REPOS["$PPA"]}"
+        #TODO: some FTP/HTTP foo
+        [ $? -eq 0 ] && UPLOAD_DONE="True"
+    else
+        echo "Error $zipname not found"
+    fi    
+}
+
+function removeFromList {
+    sed -i "/^$PACKAGE.*/d" ${DIST}.addon.list
+    #rm $DIST/$zipname
+    unset zipname
+}
+
+function checkSuperseded {
+    if [[ "${PPAPACKAGES_i386["$PACKAGE"]}" ]] && [[ "${PPAPACKAGES_i386["$PACKAGE"]}" == "${PPAPACKAGES_amd64["$PACKAGE"]}" ]]
+    then
+        dpkg --compare-versions ${PPAPACKAGES_i386["$PACKAGE"]} gt $VERSION
+        if [ $? -eq 0 ]
+        then
+            echo "Version in PPA greater then ${VERSION}, removing superseded package from list"
+            removeFromList
+        fi
+    fi
 }
 
 ###
