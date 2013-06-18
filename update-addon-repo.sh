@@ -2,7 +2,7 @@
 
 PPA=${PPA:-"stable"}
 DISTS=${DISTS:-"raring quantal precise"}
-ARCHS=${ARCHS:-"i386 amd64"}
+ARCHS="i386 amd64"
 WORK_DIR=${WORKSPACE:-$(pwd)}
 WATCH=${WATCH:-"$WORK_DIR/watch"}
 
@@ -13,20 +13,21 @@ declare -A PPAS=(
     ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
 )
 
-declare -A PPAPACKAGES
+
+declare -A PPAPACKAGES_i386
+declare -A PPAPACKAGES_amd64
 
 function checkPpaVersion {
     
-    for ARCH in $ARCHS
+    for arch in $ARCHS
     do
-        PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$ARCH/")
-        wget $PACKAGES -O Packages.${PPA}.${DIST}.${ARCH} >/dev/null 2>&1
+        PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$arch/")
+        wget $PACKAGES -O Packages.${PPA}.${DIST}.${arch} >/dev/null 2>&1
         while read -r pack vers
         do 
-            PPAPACKAGES[$pack]=$vers
-        done < <( grep -E "Package|Version" Packages.${PPA}.${DIST}.${ARCH} | sed -e 's/Package: //g' -e 's/Version: //g' | paste - - )
-        #echo "PACKAGES: ${!PPAPACKAGES[*]}"
-        done
+            [[ $arch == "i386" ]] && PPAPACKAGES_i386[$pack]=$vers || PPAPACKAGES_amd64[$pack]=$vers
+        done < <( grep -E "Package|Version" Packages.${PPA}.${DIST}.${arch} | sed -e 's/Package: //g' -e 's/Version: //g' | paste - - )
+    done
 }
 
 function verifyBuild {
@@ -37,17 +38,35 @@ function verifyBuild {
     for DIST in $DISTS
     do
         checkPpaVersion
-        [ -d $DIST ] || continue
-        for package in $(ls $DIST/)
+        #[ -d $DIST ] && cd $DIST || continue
+        echo ; echo "checking uploads in dist: $DIST"
+        while read package version
         do
-            version=$(cat $DIST/$package)
-            echo "Package: $package - Looking for $version - Version in PPA: ${PPAPACKAGES["$package"]}"
-            if [[ "${PPAPACKAGES["$package"]}" == "$version" ]]
+            #version=$(cat $package)
+            echo -n "Package: $package Version: $version PPA_version: ${PPAPACKAGES_i386["$package"]:-"none"}"
+            if [[ "${PPAPACKAGES_i386["$package"]}" == "$version" ]] && [[ "${PPAPACKAGES_amd64["$package"]}" == "$version" ]]
             then
-                echo "Package $DIST/$package found on PPA - uploading addon.xml"
+                echo " Upload: success"
+                uploadAddonXml
+            else
+                echo " Upload: failed"
             fi
-        done
+        done < <(cat ${DIST}.addon.list)
+        #cd ..
     done
 }
+
+function uploadAddonXml {
+    echo "Uploading addon.zip to xbmc addon repo"
+}
+
+###
+# Main
+###
+if ! [ -d $WATCH ]
+then
+    echo "Watch dir not found" 
+    exit 0
+fi
 
 verifyBuild
