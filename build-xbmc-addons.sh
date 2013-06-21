@@ -11,6 +11,7 @@ PDEBUILD_OPTS=${PDEBUILD_OPTS:-""}
 PBUILDER_BASE=${PBUILDER_BASE:-"/var/cache/pbuilder"}
 DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
+PPA=${PPA:-"stable"}
 URGENCY=${URGENCY:-"low"}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 
@@ -19,9 +20,17 @@ declare -A ALL_ADDONS=(
     ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive/${BRANCH}.tar.gz"
     ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive/${BRANCH}.tar.gz"
 )
-
 ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 
+declare -A PPAS=(
+    ["nightly"]='ppa:team-xbmc/xbmc-nightly'
+    ["unstable"]='ppa:team-xbmc/unstable'
+    ["stable"]='ppa:team-xbmc/ppa'
+    ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
+)
+
+
+#------------------------------------------------------------------------------------------------------------#
 
 function usage {
     echo "$0: this script builds xbmc addon debian packages."
@@ -53,10 +62,19 @@ function checkEnv {
         echo "PBUILDER_BASE: $PBUILDER_BASE"
         echo "PDEBUILD_OPTS: $PDEBUILD_OPTS"
     else
-        echo "DEBUILD_OPTS: $DEBUILD_OPTS"
-        if [[ "$PPA_UPLOAD" == "True" ]] ; then echo "PPA_UPLOAD: $PPA_UPLOAD"; rm -rf $WORK_DIR/watch >/dev/null 2>&1; fi
+        
+        if [[ "$PPA_UPLOAD" == "True" ]]
+        then
+            echo "PPA_UPLOAD: $PPA_UPLOAD"
+            echo "PPA: $PPA"
+            rm -rf $WORK_DIR/watch/$PPA >/dev/null 2>&1
+            echo "URGENCY: $URGENCY"
+            [[ "$DPUT_TARGET" == "local" ]] && DPUT_TARGET=${PPAS["$PPA"]}
+            [[ -z $DEBUILD_OPTS ]] && DEBUILD_OPTS="-S"
+        fi
     fi
-
+    echo "DEBUILD_OPTS: $DEBUILD_OPTS"
+    echo "DPUT_TARGET: $DPUT_TARGET"
     echo "#-------------------------------#"
 }
 
@@ -113,13 +131,14 @@ function buildDebianPackages {
 function createPpaCheckFiles {
     local builtpackage
     local zipname
-    local watchfile="$WORK_DIR/watch/${dist}.addon.list"
-    mkdir -p $WORK_DIR/watch/${dist}
+    local watchdir="$WORK_DIR/watch/${PPA}/${dist}"
+    local watchfile="${watchdir}.addon.list"
+    mkdir -p $watchdir
     grep Package debian/control | sed 's/Package: //g' | while read builtpackage
     do
         echo "${builtpackage} ${PACKAGEVERSION}-${TAG}~${dist}" >> $watchfile
         zipname=$(echo ${builtpackage} | sed -e "s/xbmc-//" -e "s/-/\./g")
-        [ -d ${zipname} ] && zip ${zipname}.zip ${zipname}/* && mv ${zipname}.zip $WORK_DIR/watch/${dist}/
+        [ -d ${zipname} ] && zip ${zipname}.zip ${zipname}/* && mv ${zipname}.zip $watchdir
     done
 
 }
