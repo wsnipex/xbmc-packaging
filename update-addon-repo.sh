@@ -40,8 +40,9 @@ function verifyBuild {
     for DIST in $DISTS
     do
         checkPpaVersion
-        echo ; echo "checking uploads in PPA: $PPA dist: $DIST"
         [ -r ${DIST}.addon.list ] || continue
+        echo ; echo "$(date "+%F %T") checking uploads in PPA: $PPA dist: $DIST"
+        echo "#------------------------------------------------------------------------#"
         while read PACKAGE VERSION
         do
             echo -n "Package: $PACKAGE Version: $VERSION PPA_VERSION: ${PPAPACKAGES_i386["$PACKAGE"]:-"none"}"
@@ -89,16 +90,17 @@ function checkSuperseded {
             echo "Version in PPA greater then ${VERSION}, removing superseded package from list"
             removeFromList
         fi
-    else
+    elif [[ "${PPAPACKAGES_i386["$PACKAGE"]}" ]] || [[ "${PPAPACKAGES_amd64["$PACKAGE"]}" ]]
+    then
         echo "Error: package has different versions in i386 and amd64"
         echo "i386: ${PPAPACKAGES_i386["$PACKAGE"]} amd64: ${PPAPACKAGES_amd64["$PACKAGE"]}"
     fi
 }
 
 function cleanup {
-    cd $WATCH || exit 1
-    if [ -d $PPA ]
+    if [ -d $WATCH/$PPA ]
     then
+        cd $WATCH || exit 1
         local addonfiles=$(ls $PPA/*.addon.list 2>/dev/null)
         if [ -z "$addonfiles" ]
         then
