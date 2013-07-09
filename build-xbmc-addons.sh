@@ -17,9 +17,12 @@ CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 
 declare -A ALL_ADDONS=(
     ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform/archive/${BRANCH}.tar.gz"
+    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom/archive/${BRANCH}.tar.gz"
+    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum/archive/${BRANCH}.tar.gz"
     ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive/${BRANCH}.tar.gz"
     ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive/${BRANCH}.tar.gz"
 )
+
 ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 
 declare -A PPAS=(
