@@ -13,6 +13,8 @@ DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
 PPA=${PPA:-"stable"}
 URGENCY=${URGENCY:-"low"}
+CREATE_ZIP=${CREATE_ZIP:-"False"}
+ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 
 declare -A ALL_ADDONS=(
@@ -39,6 +41,7 @@ function usage {
     echo "$0: this script builds xbmc addon debian packages."
     echo "The build is controlled by ENV variables, which van be overridden as appropriate:"
     echo "BUILDER is either debuild(default) or pdebuild(needs a proper pbuilder setup)"
+    echo "If CREATE_ZIP is True, addons are compiled directly and packaged as zip files"
     checkEnv
     exit 2
 }
@@ -50,9 +53,10 @@ function checkEnv {
     [[ -n $TAG ]] && echo "TAG: $TAG"
     echo "DISTS: $DISTS"
     echo "ARCHS: $ARCHS"
-    echo "BUILDER: $BUILDER"
     echo "CONFIGURATION: $Configuration"
-
+    [[ "$CREATE_ZIP" == "True" ]] && echo "Creating ZIPs only" && return
+    echo "BUILDER: $BUILDER"
+    
     if ! [[ $(which $BUILDER) ]]
     then
         echo "Error: can't find ${BUILDER}, consider using full path to [debuild|pdebuild]"
@@ -90,13 +94,24 @@ function prepareBuild {
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
         wget $url
         tar xzf ${BRANCH}.tar.gz
-        getPackageDetails
-        mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
-        cd ${addon}-${BRANCH} 
-        sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
-        buildDebianPackages
-        [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
+        if [[ "$CREATE_ZIP" == "True" ]]
+        then
+            createZipPackages
+        else
+            getPackageDetails
+            mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+            cd ${addon}-${BRANCH} 
+            sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
+            buildDebianPackages
+            [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
+        fi
     done
+}
+
+function createZipPackages {
+    cd ${addon}-${BRANCH}
+    cmake -DCMAKE_BUILD_TYPE=Release -DPACKAGE_ZIP=ON -DBUILD_SHARED_LIBS=1 && make package
+    mv ${addon}*.zip $ZIP_OUTPUT_DIR
 }
 
 function getPackageDetails {
