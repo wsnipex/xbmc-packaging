@@ -16,14 +16,17 @@ URGENCY=${URGENCY:-"low"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
+META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 
-declare -A ALL_ADDONS=(
-    ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform/archive/${BRANCH}.tar.gz"
-    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom/archive/${BRANCH}.tar.gz"
-    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum/archive/${BRANCH}.tar.gz"
-    ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive/${BRANCH}.tar.gz"
-    ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive/${BRANCH}.tar.gz"
-)
+declare -A ALL_ADDONS # Will be populated by loading from the meta repo later
+#declare -A ALL_ADDONS=(
+#    ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform"
+#    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom"
+#    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum"
+#    ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive"
+#    ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive"
+#)
+
 
 ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 
@@ -49,6 +52,7 @@ function usage {
 function checkEnv {
     echo "#------ build environment ------#"
     echo "Building following addons: $ADDONS"
+    echo "Using Meta Repo: $META_REPO"
     echo "WORK_DIR: $WORK_DIR"
     [[ -n $TAG ]] && echo "TAG: $TAG"
     echo "DISTS: $DISTS"
@@ -85,6 +89,17 @@ function checkEnv {
     echo "#-------------------------------#"
 }
 
+function getAllAddons {
+    local name
+    local url
+    
+    wget $META_REPO/raw/master/.gitmodules -O addon-list
+    while read -r name url 
+    do
+       ALL_ADDONS[$name]=$url 
+    done < <(cat addon-list  | paste - - - | awk '{gsub("git:", "https:"); print $5, $8}')
+}
+
 function prepareBuild {
     for addon in ${ADDONS[*]}
     do
@@ -92,7 +107,7 @@ function prepareBuild {
         url=${ALL_ADDONS["$addon"]}
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
-        wget $url
+        wget $url/archive/${BRANCH}.tar.gz
         tar xzf ${BRANCH}.tar.gz
         if [[ "$CREATE_ZIP" == "True" ]]
         then
@@ -201,6 +216,7 @@ then
 fi
 
 checkEnv
+getAllAddons
 prepareBuild
 [[ "$CLEANUP_AFTER" == "True" ]] && [[ $UPLOAD_DONE -eq 0 ]] && cleanup
 
