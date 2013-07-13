@@ -18,14 +18,17 @@ ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 
-declare -A ALL_ADDONS # Will be populated by loading from the meta repo later
-#declare -A ALL_ADDONS=(
-#    ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform"
-#    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom"
-#    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum"
-#    ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive"
-#    ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive"
-#)
+# Define a default list to cope with addons not yet in the meta repo.
+# The ones existing in the meta repo will overwrite the defaults
+declare -A ALL_ADDONS=(
+    ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform"
+    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom"
+    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum"
+    ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive"
+    ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive"
+    ["xbmc-platform"]="https://github.com/cptspiff/xbmc-platform"
+    ["pvr.demo"]="https://github.com/cptspiff/pvr.demo"
+)
 
 
 ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
@@ -93,7 +96,7 @@ function getAllAddons {
     local name
     local url
     
-    wget $META_REPO/raw/master/.gitmodules -O addon-list
+    wget -T 10 $META_REPO/raw/master/.gitmodules -O addon-list
     while read -r name url 
     do
        ALL_ADDONS[$name]=$url 
@@ -131,13 +134,19 @@ function createZipPackages {
 
 function getPackageDetails {
     PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
+    addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
     if [ -f ${addon}-${BRANCH}/${addon}/addon.xml ]
     then
         PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addon}-${BRANCH}/${addon}/addon.xml)
-    else
+    elif [ -n "$addonxml" ]
+    then
         # some addons don't follow the file system structure 100%, try our best to find an addon.xml
         PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); VER=$2} END {print VER}' ${addon}-${BRANCH}/${addon:0:5}*/addon.xml)
+    else
+        # try CmakeLists as a final effort
+        PACKAGEVERSION=$(grep -E "PROPERTIES.*VERSION" ${addon}-${BRANCH}/CMakeLists.txt | grep -oE "[0-9\.]+")
     fi
+
     [[ -z $PACKAGEVERSION ]] && echo "Error: could not determine version of $addon" && break
 }
 
