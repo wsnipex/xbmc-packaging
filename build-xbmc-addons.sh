@@ -29,6 +29,10 @@ declare -A ALL_ADDONS=(
     ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive"
     ["xbmc-platform"]="https://github.com/cptspiff/xbmc-platform"
     ["pvr.demo"]="https://github.com/cptspiff/pvr.demo"
+    ["pvr.iptvsimple"]="https://github.com/cptspiff/pvr.iptvsimple"
+    ["pvr.njoy"]="https://github.com/cptspiff/pvr.njoy"
+    ["pvr.argustv"]="https://github.com/cptspiff/pvr.argustv"
+    ["pvr.hts"]="https://github.com/cptspiff/pvr.hts"
 )
 
 
