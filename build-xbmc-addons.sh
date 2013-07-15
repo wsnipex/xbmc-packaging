@@ -17,6 +17,7 @@ CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
+ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
@@ -29,6 +30,7 @@ declare -A ALL_ADDONS=(
     ["xbmc-platform"]="https://github.com/cptspiff/xbmc-platform"
     ["pvr.demo"]="https://github.com/cptspiff/pvr.demo"
 )
+
 
 
 ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
@@ -106,7 +108,10 @@ function getAllAddons {
 function prepareBuild {
     for addon in ${ADDONS[*]}
     do
+        [[ "$addon" =~ "$ADDON_FILTER" ]] && echo "WARNING: found $addon in ADDON_FILTER, skipping build" && continue
         cd $WORK_DIR || exit 1
+        echo "\n#-------------------------------------------------------#"
+        echo "INFO: building $addon"
         url=${ALL_ADDONS["$addon"]}
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
@@ -147,7 +152,7 @@ function getPackageDetails {
         PACKAGEVERSION=$(grep -E "PROPERTIES.*VERSION" ${addon}-${BRANCH}/CMakeLists.txt | grep -oE "[0-9\.]+")
     fi
 
-    [[ -z $PACKAGEVERSION ]] && echo "Error: could not determine version of $addon" && break
+    [[ -z $PACKAGEVERSION ]] && echo "ERROR: could not determine version of $addon" && break
 }
 
 function buildDebianPackages {
@@ -190,19 +195,19 @@ function uploadPkg {
     then
         local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}~${dist}_${arch}.changes"
         PKG="${PBUILDER_BASE}/${dist}-${arch}/result/${changes}"
-        echo "signing package"
+        echo "INFO: signing package"
         debsign $PKG
-        echo "uploading $PKG to $DPUT_TARGET"
+        echo "INFO: uploading $PKG to $DPUT_TARGET"
         dput $DPUT_TARGET $PKG
         UPLOAD_DONE=$?
     elif [[ "$PPA_UPLOAD" == "True" ]]
     then
         local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}*.changes"
-        echo "uploading $changes to $DPUT_TARGET"
+        echo "INFO: uploading $changes to $DPUT_TARGET"
         dput $DPUT_TARGET $changes
         UPLOAD_DONE=$?
     else
-        echo "Build produced following packages:"
+        echo "INFO: Build produced following packages:"
         ls -l *.deb
     fi
 }
