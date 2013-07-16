@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# Copyright (C) 2013 wsnipex, Team XBMC
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation; either version 2 of the License,
+# or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
 
 BRANCH=${BRANCH:-"master"}
 TAG=${TAG:-"1"}
@@ -37,10 +50,6 @@ declare -A ALL_ADDONS=(
     ["pvr.vuplus"]="https://github.com/cptspiff/pvr.vuplus"
     ["pvr.mythtv.cmyth"]="https://github.com/cptspiff/pvr.mythtv.cmyth"
 )
-
-
-
-ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 
 declare -A PPAS=(
     ["nightly"]='ppa:team-xbmc/xbmc-nightly'
@@ -105,12 +114,14 @@ function checkEnv {
 function getAllAddons {
     local name
     local url
-    
+
     wget -T 10 $META_REPO/raw/master/.gitmodules -O addon-list
-    while read -r name url 
+    while read -r name url
     do
-       ALL_ADDONS[$name]=$url 
+       ALL_ADDONS[$name]=$url
     done < <(cat addon-list  | paste - - - | awk '{gsub("git:", "https:"); print $5, $8}')
+
+    ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 }
 
 function prepareBuild {
