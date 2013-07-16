@@ -11,13 +11,15 @@ declare -A PPAS=(
     ["unstable"]='http://ppa.launchpad.net/team-xbmc/unstable/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
     ["stable"]='http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
     ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
+    ["xbmc-addons-unstable"]='http://ppa.launchpad.net/wsnipex/xbmc-addons-unstable/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
 )
 
 declare -A REPOS=(
     ["nightly"]='ftp://nightlyrepo.xbmc.org'
     ["unstable"]='ftp://unstablerepo.xbmc.org'
     ["stable"]='ftp://stablerepo.xbmc.org'
-    ["wsnipex-nightly"]='ftp://nightlyrepows.xbmc.org'
+    ["wsnipex-nightly"]='ftp://nightlyrepo.xbmc.org'
+    ["xbmc-addons-unstable"]='ftp://foobar.wsnipex'
 )
 
 declare -A PPAPACKAGES_i386

@@ -11,13 +11,13 @@ PDEBUILD_OPTS=${PDEBUILD_OPTS:-""}
 PBUILDER_BASE=${PBUILDER_BASE:-"/var/cache/pbuilder"}
 DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
-PPA=${PPA:-"stable"}
+PPA=${PPA:-"xbmc-addons-unstable"}
 URGENCY=${URGENCY:-"low"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
-ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop"}
+ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
@@ -35,6 +35,7 @@ declare -A ALL_ADDONS=(
     ["pvr.hts"]="https://github.com/cptspiff/pvr.hts"
     ["pvr.dvbviewer"]="https://github.com/cptspiff/pvr.dvbviewer"
     ["pvr.vuplus"]="https://github.com/cptspiff/pvr.vuplus"
+    ["pvr.mythtv.cmyth"]="https://github.com/cptspiff/pvr.mythtv.cmyth"
 )
 
 
@@ -46,6 +47,7 @@ declare -A PPAS=(
     ["unstable"]='ppa:team-xbmc/unstable'
     ["stable"]='ppa:team-xbmc/ppa'
     ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
+    ["xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
 )
 
 
