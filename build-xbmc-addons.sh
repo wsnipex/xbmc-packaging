@@ -33,6 +33,8 @@ declare -A ALL_ADDONS=(
     ["pvr.njoy"]="https://github.com/cptspiff/pvr.njoy"
     ["pvr.argustv"]="https://github.com/cptspiff/pvr.argustv"
     ["pvr.hts"]="https://github.com/cptspiff/pvr.hts"
+    ["pvr.dvbviewer"]="https://github.com/cptspiff/pvr.dvbviewer"
+    ["pvr.vuplus"]="https://github.com/cptspiff/pvr.vuplus"
 )
 
 
