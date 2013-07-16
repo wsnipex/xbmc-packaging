@@ -4,8 +4,8 @@ ADDONS=${ADDONS:-"visualization.waveform visualization.goom visualization.spectr
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="master" \
-DISTS="raring quantal precise" \
+DISTS="saucy raring quantal precise" \
 PPA_UPLOAD="True" \
-PPA="wsnipex-nightly" \
+PPA="xbmc-addons-unstable" \
 ./build-xbmc-addons.sh
 
