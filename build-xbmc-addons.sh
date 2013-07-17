@@ -109,11 +109,13 @@ function checkEnv {
             echo "URGENCY: $URGENCY"
             [[ "$DPUT_TARGET" == "local" ]] && DPUT_TARGET=${PPAS["$PPA"]}
             [[ -z $DEBUILD_OPTS ]] && DEBUILD_OPTS="-S"
+            [[ -z $DPUT_TARGET ]] && echo "ERROR: empty PPA, refusing build" && exit 4
         fi
     fi
     echo "DEBUILD_OPTS: $DEBUILD_OPTS"
     echo "DPUT_TARGET: $DPUT_TARGET"
     echo "#-------------------------------#"
+
 }
 
 function getAllAddons {

@@ -6,6 +6,6 @@ TAG=${TAG:-"1"} \
 BRANCH="master" \
 DISTS="saucy raring quantal precise" \
 PPA_UPLOAD="True" \
-PPA="xbmc-addons-unstable" \
+PPA="wsnipex-xbmc-addons-unstable" \
 ./build-xbmc-addons.sh
 
