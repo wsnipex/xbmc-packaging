@@ -24,7 +24,7 @@ PDEBUILD_OPTS=${PDEBUILD_OPTS:-""}
 PBUILDER_BASE=${PBUILDER_BASE:-"/var/cache/pbuilder"}
 DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
-PPA=${PPA:-"xbmc-addons-unstable"}
+PPA=${PPA:-"wsnipex-xbmc-addons-unstable"}
 URGENCY=${URGENCY:-"low"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
@@ -56,7 +56,7 @@ declare -A PPAS=(
     ["unstable"]='ppa:team-xbmc/unstable'
     ["stable"]='ppa:team-xbmc/ppa'
     ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
-    ["xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
+    ["wsnipex-xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
 )
 
 
