@@ -134,7 +134,7 @@ function getAllAddons {
 function prepareBuild {
     for addon in ${ADDONS[*]}
     do
-        [[ "$addon" =~ "$ADDON_FILTER" ]] && echo "WARNING: found $addon in ADDON_FILTER, skipping build" && continue
+        [[ "$ADDON_FILTER" =~ "$addon" ]] && echo "WARNING: found $addon in ADDON_FILTER, skipping build" && continue
         cd $WORK_DIR || exit 1
         echo "\n#-------------------------------------------------------#"
         echo "INFO: building $addon"
