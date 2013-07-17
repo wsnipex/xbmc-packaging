@@ -29,26 +29,29 @@ URGENCY=${URGENCY:-"low"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
+GITHUB_USER=${GITHUB_USER:-"cptspiff"}
 META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
 declare -A ALL_ADDONS=(
-    ["visualization.waveform"]="https://github.com/cptspiff/visualization.waveform"
-    ["visualization.goom"]="https://github.com/cptspiff/visualization.goom"
-    ["visualization.spectrum"]="https://github.com/cptspiff/visualization.spectrum"
-    ["gameclient.snes9x"]="https://github.com/cptspiff/gameclient.snes9x/archive"
-    ["screensavers.rsxs"]="https://github.com/cptspiff/screensavers.rsxs/archive"
-    ["xbmc-platform"]="https://github.com/cptspiff/xbmc-platform"
-    ["pvr.demo"]="https://github.com/cptspiff/pvr.demo"
-    ["pvr.iptvsimple"]="https://github.com/cptspiff/pvr.iptvsimple"
-    ["pvr.njoy"]="https://github.com/cptspiff/pvr.njoy"
-    ["pvr.argustv"]="https://github.com/cptspiff/pvr.argustv"
-    ["pvr.hts"]="https://github.com/cptspiff/pvr.hts"
-    ["pvr.dvbviewer"]="https://github.com/cptspiff/pvr.dvbviewer"
-    ["pvr.vuplus"]="https://github.com/cptspiff/pvr.vuplus"
-    ["pvr.mythtv.cmyth"]="https://github.com/cptspiff/pvr.mythtv.cmyth"
+    ["visualization.waveform"]="https://github.com/$GITHUB_USER/visualization.waveform"
+    ["visualization.goom"]="https://github.com/$GITHUB_USER/visualization.goom"
+    ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
+    ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
+    ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x/archive"
+    ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs/archive"
+    ["xbmc-platform"]="https://github.com/$GITHUB_USER/xbmc-platform"
+    ["pvr.demo"]="https://github.com/$GITHUB_USER/pvr.demo"
+    ["pvr.iptvsimple"]="https://github.com/$GITHUB_USER/pvr.iptvsimple"
+    ["pvr.njoy"]="https://github.com/$GITHUB_USER/pvr.njoy"
+    ["pvr.argustv"]="https://github.com/$GITHUB_USER/pvr.argustv"
+    ["pvr.hts"]="https://github.com/$GITHUB_USER/pvr.hts"
+    ["pvr.dvbviewer"]="https://github.com/$GITHUB_USER/pvr.dvbviewer"
+    ["pvr.vuplus"]="https://github.com/$GITHUB_USER/pvr.vuplus"
+    ["pvr.mythtv.cmyth"]="https://github.com/$GITHUB_USER/pvr.mythtv.cmyth"
+    ["pvr.mediaportal.tvserver"]="https://github.com/$GITHUB_USER/pvr.mediaportal.tvserver"
 )
 
 declare -A PPAS=(
