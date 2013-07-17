@@ -26,6 +26,7 @@ DPUT_TARGET=${DPUT_TARGET:-"local"}
 PPA_UPLOAD=${PPA_UPLOAD:-"False"}
 PPA=${PPA:-"wsnipex-xbmc-addons-unstable"}
 URGENCY=${URGENCY:-"low"}
+REBUILD=${REBUILD:-"False"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
@@ -107,6 +108,7 @@ function checkEnv {
             echo "PPA: $PPA"
             rm -rf $WORK_DIR/watch/$PPA >/dev/null 2>&1
             echo "URGENCY: $URGENCY"
+            echo "REBUILD: $REBUILD"
             [[ "$DPUT_TARGET" == "local" ]] && DPUT_TARGET=${PPAS["$PPA"]}
             [[ -z $DEBUILD_OPTS ]] && DEBUILD_OPTS="-S"
             [[ -z $DPUT_TARGET ]] && echo "ERROR: empty PPA, refusing build" && exit 4
@@ -148,7 +150,13 @@ function prepareBuild {
             createZipPackages
         else
             getPackageDetails
-            mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+            if [[ "$REBUILD" == "True" ]]
+            then
+                orig=$(echo ${PPAS["$PPA"]} | sed -e 's%/%/+archive/%' -e 's%ppa:%https://launchpad.net/~%')
+                wget -T 10 -t 5 ${orig}/+files/${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+            else
+                mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+            fi
             cd ${addon}-${BRANCH} 
             sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
             buildDebianPackages
