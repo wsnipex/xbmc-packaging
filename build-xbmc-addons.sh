@@ -40,6 +40,7 @@ declare -A ALL_ADDONS=(
     ["visualization.goom"]="https://github.com/$GITHUB_USER/visualization.goom"
     ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
     ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
+    ["visualization.fishbmc"]="https://github.com/$GITHUB_USER/visualization.fishbmc"
     ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x/archive"
     ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs/archive"
     ["xbmc-platform"]="https://github.com/$GITHUB_USER/xbmc-platform"
