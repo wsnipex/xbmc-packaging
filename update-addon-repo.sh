@@ -14,17 +14,18 @@
 #
 
 PPA=${PPA:-"auto"}
-DISTS=${DISTS:-"raring quantal precise"}
+DISTS=${DISTS:-"saucy raring quantal precise"}
 ARCHS="i386 amd64"
 WORK_DIR=${WORKSPACE:-$(pwd)}
 WATCH=${WATCH:-"$WORK_DIR/watch"}
 
+# Sync with build-xbmc-addons.sh
 declare -A PPAS=(
-    ["nightly"]='http://ppa.launchpad.net/team-xbmc/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
-    ["unstable"]='http://ppa.launchpad.net/team-xbmc/unstable/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
-    ["stable"]='http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
-    ["wsnipex-nightly"]='http://ppa.launchpad.net/wsnipex/xbmc-nightly/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
-    ["xbmc-addons-unstable"]='http://ppa.launchpad.net/wsnipex/xbmc-addons-unstable/ubuntu/dists/#dist#/main/binary-#arch#/Packages'
+    ["nightly"]='ppa:team-xbmc/xbmc-nightly'
+    ["unstable"]='ppa:team-xbmc/unstable'
+    ["stable"]='ppa:team-xbmc/ppa'
+    ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
+    ["wsnipex-xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
 )
 
 declare -A REPOS=(
@@ -32,7 +33,7 @@ declare -A REPOS=(
     ["unstable"]='ftp://unstablerepo.xbmc.org'
     ["stable"]='ftp://stablerepo.xbmc.org'
     ["wsnipex-nightly"]='ftp://nightlyrepo.xbmc.org'
-    ["xbmc-addons-unstable"]='ftp://foobar.wsnipex'
+    ["wsnipex-xbmc-addons-unstable"]='ftp://foobar.wsnipex'
 )
 
 declare -A PPAPACKAGES_i386
@@ -41,7 +42,7 @@ declare -A PPAPACKAGES_amd64
 function checkPpaVersion {
     for arch in $ARCHS
     do
-        PACKAGES=$(echo ${PPAS["$PPA"]} | sed -e "s/#dist#/$DIST/" -e "s/#arch#/$arch/")
+        PACKAGES=$(echo ${PPAS["$PPA"]}"/ubuntu/dists/#dist#/main/binary-#arch#/Packages" | sed -e 's%ppa:%http://ppa.launchpad.net/%' -e "s/#dist#/$DIST/" -e "s/#arch#/$arch/")
         wget $PACKAGES -O Packages.${PPA}.${DIST}.${arch} >/dev/null 2>&1
         while read -r pack vers
         do 
@@ -150,7 +151,13 @@ then
     done
     cleanup
 else
-    verifyBuild
+    if [[ -d $WATCH/$PPA ]]
+    then 
+        verifyBuild 
+    else
+        echo "$WATCH/$PPA does not exist"
+        exit 1
+    fi
     cleanup
 fi
 
