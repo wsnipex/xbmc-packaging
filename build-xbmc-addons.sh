@@ -41,8 +41,8 @@ declare -A ALL_ADDONS=(
     ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
     ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
     ["visualization.fishbmc"]="https://github.com/$GITHUB_USER/visualization.fishbmc"
-    ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x/archive"
-    ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs/archive"
+    ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x"
+    ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs"
     ["xbmc-platform"]="https://github.com/$GITHUB_USER/xbmc-platform"
     ["pvr.demo"]="https://github.com/$GITHUB_USER/pvr.demo"
     ["pvr.iptvsimple"]="https://github.com/$GITHUB_USER/pvr.iptvsimple"
@@ -122,7 +122,7 @@ function getAllAddons {
     local name
     local url
 
-    wget -T 10 $META_REPO/raw/master/.gitmodules -O addon-list
+    wget -T 10 -t 5 $META_REPO/raw/master/.gitmodules -O addon-list
     while read -r name url
     do
        ALL_ADDONS[$name]=$url
@@ -141,7 +141,7 @@ function prepareBuild {
         url=${ALL_ADDONS["$addon"]}
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
-        wget $url/archive/${BRANCH}.tar.gz
+        wget -T 10 -t 5 $url/archive/${BRANCH}.tar.gz
         tar xzf ${BRANCH}.tar.gz
         if [[ "$CREATE_ZIP" == "True" ]]
         then
