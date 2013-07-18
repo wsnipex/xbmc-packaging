@@ -28,6 +28,7 @@ PPA=${PPA:-"wsnipex-xbmc-addons-unstable"}
 URGENCY=${URGENCY:-"low"}
 REBUILD=${REBUILD:-"False"}
 CREATE_ZIP=${CREATE_ZIP:-"False"}
+CREATE_TGZ=${CREATE_TGZ:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 GITHUB_USER=${GITHUB_USER:-"cptspiff"}
@@ -87,6 +88,7 @@ function checkEnv {
     echo "ARCHS: $ARCHS"
     echo "CONFIGURATION: $Configuration"
     [[ "$CREATE_ZIP" == "True" ]] && echo "Creating ZIPs only" && return
+    [[ "$CREATE_TGZ" == "True" ]] && echo "Creating tarballs only" && return
     echo "BUILDER: $BUILDER"
     
     if ! [[ $(which $BUILDER) ]]
@@ -148,6 +150,9 @@ function prepareBuild {
         if [[ "$CREATE_ZIP" == "True" ]]
         then
             createZipPackages
+        elif [[ "$CREATE_TGZ" == "True" ]]
+        then
+            createTgzPackages
         else
             getPackageDetails
             if [[ "$REBUILD" == "True" ]]
@@ -169,6 +174,12 @@ function createZipPackages {
     cd ${addon}-${BRANCH}
     cmake -DCMAKE_BUILD_TYPE=Release -DPACKAGE_ZIP=ON -DBUILD_SHARED_LIBS=1 && make package
     mv ${addon}*.zip $ZIP_OUTPUT_DIR
+}
+
+function createTgzPackages {
+    cd ${addon}-${BRANCH}
+    cmake -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TGZ=ON -DBUILD_SHARED_LIBS=1 && make package
+    mv ${addon}*.tar.gz $ZIP_OUTPUT_DIR
 }
 
 function getPackageDetails {
