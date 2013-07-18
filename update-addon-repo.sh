@@ -85,7 +85,8 @@ function uploadAddonXml {
         #TODO: some FTP/HTTP foo
         [ $? -eq 0 ] && UPLOAD_DONE="True"
     else
-        echo "Error $zipname not found"
+        echo "Error $zipname not found, removing from list"
+        removeFromList
     fi    
 }
 
