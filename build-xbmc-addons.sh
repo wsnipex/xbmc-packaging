@@ -56,7 +56,7 @@ declare -A ALL_ADDONS=(
     ["pvr.mythtv.cmyth"]="https://github.com/$GITHUB_USER/pvr.mythtv.cmyth"
     ["pvr.mediaportal.tvserver"]="https://github.com/$GITHUB_USER/pvr.mediaportal.tvserver"
     ["pvr.nextpvr"]="https://github.com/$GITHUB_USER/pvr.nextpvr"
-    ["pvr.vdr.vnsi"]="https://github.com/cptspiff/pvr.vdr.vnsi"
+    ["pvr.vdr.vnsi"]="https://github.com/$GITHUB_USER/pvr.vdr.vnsi"
 )
 
 declare -A PPAS=(
