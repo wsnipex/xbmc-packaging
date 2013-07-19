@@ -146,6 +146,7 @@ function prepareBuild {
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
         wget -T 10 -t 5 $url/archive/${BRANCH}.tar.gz
+        ! [ -r ${BRANCH}.tar.gz ] && echo "ERROR: download of ${BRANCH}.tar.gz failed" && continue
         tar xzf ${BRANCH}.tar.gz
         if [[ "$CREATE_ZIP" == "True" ]]
         then
