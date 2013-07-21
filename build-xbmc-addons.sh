@@ -206,6 +206,7 @@ function buildDebianPackages {
     for dist in $DISTS
     do
         sed "s/#DIST#/${dist}/g" debian/changelog.tmp > debian/changelog
+        [[ -r ${addon}/changelog.txt ]] && dch -a $(cat ${addon}/changelog.txt) || dch -a "no upstream changelog available"
         dch --release -u $URGENCY ""
         for arch in $ARCHS
         do
