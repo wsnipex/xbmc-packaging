@@ -26,6 +26,7 @@ declare -A PPAS=(
     ["stable"]='ppa:team-xbmc/ppa'
     ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
     ["wsnipex-xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
+    ["wsnipex-xbmc-addons-test"]='ppa:wsnipex/xbmc-addons-test'
 )
 
 declare -A REPOS=(
