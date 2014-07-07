@@ -1,1 +1,3 @@
 usr/include/xbmc/xbmc_audio*.h
+usr/include/xbmc/xbmc_adsp*.h
+usr/include/xbmc/libXBMC_adsp.h
