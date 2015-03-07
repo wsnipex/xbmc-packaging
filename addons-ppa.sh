@@ -4,8 +4,8 @@
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="master" \
-DISTS="saucy raring quantal precise" \
+DISTS="vivid utopic trusty precise" \
 PPA_UPLOAD="True" \
-PPA="wsnipex-xbmc-addons-unstable" \
+PPA="wsnipex-nightly" \
 ./build-xbmc-addons.sh
 

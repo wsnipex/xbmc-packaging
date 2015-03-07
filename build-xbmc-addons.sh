@@ -31,39 +31,69 @@ CREATE_ZIP=${CREATE_ZIP:-"False"}
 CREATE_TGZ=${CREATE_TGZ:-"False"}
 ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
-GITHUB_USER=${GITHUB_USER:-"cptspiff"}
-META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
+GITHUB_USER=${GITHUB_USER:-"xbmc"}
+GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
+#META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
-declare -A ALL_ADDONS=(
+AUDIO_ADDONS="
+    ["audioencoder.vorbis"]="https://github.com/$GITHUB_USER/audioencoder.vorbis"
+    ["audioencoder.flac"]="https://github.com/$GITHUB_USER/audioencoder.flac"
+    ["audioencoder.lame"]="https://github.com/$GITHUB_USER/audioencoder.lame"
+    ["audioencoder.wav"]="https://github.com/$GITHUB_USER/audioencoder.wav"
+    ["audiodecoder.modplug"]="https://github.com/notspiff/audiodecoder.modplug"
+    ["audiodecoder.nosefart"]="https://github.com/notspiff/audiodecoder.nosefart"
+    ["audiodecoder.sidplay"]="https://github.com/notspiff/audiodecoder.sidplay"
+    ["audiodecoder.snesapu"]="https://github.com/notspiff/audiodecoder.snesapu"
+    ["audiodecoder.stsound"]="https://github.com/notspiff/audiodecoder.stsound"
+    ["audiodecoder.timidity"]="https://github.com/notspiff/audiodecoder.timidity"
+    ["audiodecoder.vgmstream"]="https://github.com/notspiff/audiodecoder.vgmstream"
+"
+
+VIS_ADDONS="
     ["visualization.waveform"]="https://github.com/$GITHUB_USER/visualization.waveform"
     ["visualization.goom"]="https://github.com/$GITHUB_USER/visualization.goom"
     ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
     ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
     ["visualization.fishbmc"]="https://github.com/$GITHUB_USER/visualization.fishbmc"
     ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x"
+"
+
+SCR_ADDONS="
     ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs"
-    ["xbmc-platform"]="https://github.com/$GITHUB_USER/xbmc-platform"
-    ["pvr.demo"]="https://github.com/$GITHUB_USER/pvr.demo"
-    ["pvr.iptvsimple"]="https://github.com/$GITHUB_USER/pvr.iptvsimple"
-    ["pvr.njoy"]="https://github.com/$GITHUB_USER/pvr.njoy"
-    ["pvr.argustv"]="https://github.com/$GITHUB_USER/pvr.argustv"
-    ["pvr.hts"]="https://github.com/$GITHUB_USER/pvr.hts"
-    ["pvr.dvbviewer"]="https://github.com/$GITHUB_USER/pvr.dvbviewer"
-    ["pvr.vuplus"]="https://github.com/$GITHUB_USER/pvr.vuplus"
-    ["pvr.mythtv.cmyth"]="https://github.com/$GITHUB_USER/pvr.mythtv.cmyth"
-    ["pvr.mediaportal.tvserver"]="https://github.com/$GITHUB_USER/pvr.mediaportal.tvserver"
-    ["pvr.nextpvr"]="https://github.com/$GITHUB_USER/pvr.nextpvr"
-    ["pvr.vdr.vnsi"]="https://github.com/$GITHUB_USER/pvr.vdr.vnsi"
-)
+"
+
+PVR_ADDONS="
+    ["pvr.demo"]="https://github.com/$GITHUB_USER_PVR/pvr.demo"
+    ["pvr.iptvsimple"]="https://github.com/$GITHUB_USER_PVR/pvr.iptvsimple"
+    ["pvr.njoy"]="https://github.com/$GITHUB_USER_PVR/pvr.njoy"
+    ["pvr.argustv"]="https://github.com/$GITHUB_USER_PVR/pvr.argustv"
+    ["pvr.hts"]="https://github.com/$GITHUB_USER_PVR/pvr.hts"
+    ["pvr.dvbviewer"]="https://github.com/$GITHUB_USER_PVR/pvr.dvbviewer"
+    ["pvr.vuplus"]="https://github.com/$GITHUB_USER_PVR/pvr.vuplus"
+    ["pvr.mythtv"]="https://github.com/$GITHUB_USER_PVR/pvr.mythtv"
+    ["pvr.mediaportal.tvserver"]="https://github.com/$GITHUB_USER_PVR/pvr.mediaportal.tvserver"
+    ["pvr.nextpvr"]="https://github.com/$GITHUB_USER_PVR/pvr.nextpvr"
+    ["pvr.vdr.vnsi"]="https://github.com/$GITHUB_USER_PVR/pvr.vdr.vnsi"
+    ["pvr.pctv"]="https://github.com/$GITHUB_USER_PVR/pvr.pctv"
+    ["pvr.filmon"]="https://github.com/$GITHUB_USER_PVR/pvr.filmon"
+    ["pvr.wmc"]="https://github.com/$GITHUB_USER_PVR/pvr.wmc"
+    ["pvr.dvblink"]="https://github.com/$GITHUB_USER_PVR/pvr.dvblink"
+"
+
+eval "declare -A ALL_ADDONS=(
+    ["kodi-platform"]="https://github.com/$GITHUB_USER/kodi-platform"
+    $PVR_ADDONS
+    $AUDIO_ADDONS
+)"
 
 declare -A PPAS=(
     ["nightly"]='ppa:team-xbmc/xbmc-nightly'
     ["unstable"]='ppa:team-xbmc/unstable'
     ["stable"]='ppa:team-xbmc/ppa'
-    ["wsnipex-nightly"]='ppa:wsnipex/xbmc-nightly'
+    ["wsnipex-nightly"]='ppa:wsnipex/kodi-git'
     ["wsnipex-xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
 )
 
@@ -185,6 +215,8 @@ function createTgzPackages {
 }
 
 function getPackageDetails {
+    [ "${addon}" == "kodi-platform" ] && PACKAGEVERSION="" && return
+
     PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
     addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
     if [ -f ${addon}-${BRANCH}/${addon}/addon.xml ]
