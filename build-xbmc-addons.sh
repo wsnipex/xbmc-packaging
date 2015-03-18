@@ -35,6 +35,7 @@ GITHUB_USER=${GITHUB_USER:-"xbmc"}
 GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
 #META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
+ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
@@ -84,9 +85,7 @@ PVR_ADDONS="
 "
 
 eval "declare -A ALL_ADDONS=(
-    ["kodi-platform"]="https://github.com/$GITHUB_USER/kodi-platform"
-    $PVR_ADDONS
-    $AUDIO_ADDONS
+    $PVR_ADDONS $AUDIO_ADDONS
 )"
 
 declare -A PPAS=(
@@ -170,6 +169,7 @@ function prepareBuild {
     for addon in ${ADDONS[*]}
     do
         [[ "$ADDON_FILTER" =~ "$addon" ]] && echo "WARNING: found $addon in ADDON_FILTER, skipping build" && continue
+        [[ ! "$ADDONS_TO_BUILD" =~ "$addon" ]] && [[ "$ADDONS_TO_BUILD" != "all" ]] &&  continue
         cd $WORK_DIR || exit 1
         echo "\n#-------------------------------------------------------#"
         echo "INFO: building $addon"
