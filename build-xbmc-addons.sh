@@ -85,7 +85,7 @@ PVR_ADDONS="
 "
 
 eval "declare -A ALL_ADDONS=(
-    $PVR_ADDONS $AUDIO_ADDONS
+    $PVR_ADDONS $AUDIO_ADDONS $SCR_ADDONS $VIS_ADDONS ["kodi-platform"]="https://github.com/$GITHUB_USER/kodi-platform"
 )"
 
 declare -A PPAS=(
