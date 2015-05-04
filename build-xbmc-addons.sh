@@ -215,7 +215,12 @@ function createTgzPackages {
 }
 
 function getPackageDetails {
-    [ "${addon}" == "kodi-platform" ] && PACKAGEVERSION="" && return
+    if [ "${addon}" == "kodi-platform" ]
+    then
+        PACKAGEVERSION="$(head -1 ${addon}-${BRANCH}/debian/changelog.in | sed 's/^.* (\(.*\)~#DIST#) .*$/\1/')"
+        PACKAGENAME="kodiplatform"
+        return
+    fi
 
     PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
     addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
@@ -282,7 +287,7 @@ function uploadPkg {
         UPLOAD_DONE=$?
     elif [[ "$PPA_UPLOAD" == "True" ]]
     then
-        local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}*.changes"
+        local changes="${PACKAGENAME}_${PACKAGEVERSION}*.changes"
         echo "INFO: uploading $changes to $DPUT_TARGET"
         dput $DPUT_TARGET $changes
         UPLOAD_DONE=$?
