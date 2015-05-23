@@ -59,7 +59,8 @@ VIS_ADDONS="
     ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
     ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
     ["visualization.fishbmc"]="https://github.com/$GITHUB_USER/visualization.fishbmc"
-    ["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x"
+    ["visualization.shadertoy"]="https://github.com/wsnipex/visualization.shadertoy"
+    #["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x"
 "
 
 SCR_ADDONS="
@@ -82,6 +83,7 @@ PVR_ADDONS="
     ["pvr.filmon"]="https://github.com/$GITHUB_USER_PVR/pvr.filmon"
     ["pvr.wmc"]="https://github.com/$GITHUB_USER_PVR/pvr.wmc"
     ["pvr.dvblink"]="https://github.com/$GITHUB_USER_PVR/pvr.dvblink"
+    ["pvr.vbox"]="https://github.com/$GITHUB_USER_PVR/pvr.vbox"
 "
 
 eval "declare -A ALL_ADDONS=(
