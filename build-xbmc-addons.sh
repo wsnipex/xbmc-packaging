@@ -287,7 +287,7 @@ function uploadPkg {
         UPLOAD_DONE=$?
     elif [[ "$PPA_UPLOAD" == "True" ]]
     then
-        local changes="${PACKAGENAME}_${PACKAGEVERSION}*.changes"
+        local changes="${PACKAGENAME}_${PACKAGEVERSION}-${TAG}*.changes"
         echo "INFO: uploading $changes to $DPUT_TARGET"
         dput $DPUT_TARGET $changes
         UPLOAD_DONE=$?
