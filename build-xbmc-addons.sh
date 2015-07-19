@@ -84,6 +84,7 @@ PVR_ADDONS="
     ["pvr.wmc"]="https://github.com/$GITHUB_USER_PVR/pvr.wmc"
     ["pvr.dvblink"]="https://github.com/$GITHUB_USER_PVR/pvr.dvblink"
     ["pvr.vbox"]="https://github.com/$GITHUB_USER_PVR/pvr.vbox"
+    ["pvr.stalker"]="https://github.com/$GITHUB_USER_PVR/pvr.stalker"
 "
 
 eval "declare -A ALL_ADDONS=(
