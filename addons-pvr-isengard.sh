@@ -4,7 +4,7 @@ ADDONS=${ADDONS:-"pvr.demo pvr.iptvsimple pvr.njoy pvr.argustv pvr.hts pvr.dvbvi
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="Isengard" \
-DISTS="vivid utopic trusty" \
+DISTS="vivid trusty" \
 PPA_UPLOAD="True" \
 PPA="wsnipex-xbmc-addons-unstable" \
 ./build-xbmc-addons.sh

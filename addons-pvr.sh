@@ -4,8 +4,8 @@ ADDONS=${ADDONS:-"pvr.demo pvr.iptvsimple pvr.njoy pvr.argustv pvr.hts pvr.dvbvi
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="master" \
-DISTS="vivid utopic trusty precise" \
+DISTS="vivid trusty" \
 PPA_UPLOAD="True" \
-PPA="wsnipex-nightly" \
+PPA="nightly" \
 ./build-xbmc-addons.sh
 
