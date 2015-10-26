@@ -4,8 +4,8 @@
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="master" \
-DISTS="vivid trusty" \
+DISTS="wily vivid trusty" \
 PPA_UPLOAD="True" \
-PPA="wsnipex-nightly" \
+PPA=${PPA:-"nightly"} \
 ./build-xbmc-addons.sh
 

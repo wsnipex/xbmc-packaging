@@ -226,10 +226,11 @@ function getPackageDetails {
     fi
 
     PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
-    addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
-    if [ -f ${addon}-${BRANCH}/${addon}/addon.xml ]
+    addonxml=$(find ${addon}-${BRANCH} -name addon.xml.in)
+    [ -z $addonxml ] && addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
+    if [ -f ${addonxml} ]
     then
-        PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addon}-${BRANCH}/${addon}/addon.xml)
+        PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addonxml})
     elif [ -n "$addonxml" ]
     then
         # some addons don't follow the file system structure 100%, try our best to find an addon.xml
