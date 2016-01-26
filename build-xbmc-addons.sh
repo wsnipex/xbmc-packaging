@@ -33,6 +33,7 @@ ZIP_OUTPUT_DIR=${ZIP_OUTPUT_DIR:-$WORK_DIR}
 CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 GITHUB_USER=${GITHUB_USER:-"xbmc"}
 GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
+GITHUB_USER_VIZ=${GITHUB_USER_VIZ:-"notspiff"}
 #META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
@@ -54,17 +55,17 @@ AUDIO_ADDONS="
 "
 
 VIS_ADDONS="
-    ["visualization.waveform"]="https://github.com/$GITHUB_USER/visualization.waveform"
-    ["visualization.goom"]="https://github.com/$GITHUB_USER/visualization.goom"
-    ["visualization.spectrum"]="https://github.com/$GITHUB_USER/visualization.spectrum"
-    ["visualization.projectm"]="https://github.com/$GITHUB_USER/visualization.projectm"
-    ["visualization.fishbmc"]="https://github.com/$GITHUB_USER/visualization.fishbmc"
-    ["visualization.shadertoy"]="https://github.com/wsnipex/visualization.shadertoy"
+    ["visualization.waveform"]="https://github.com/$GITHUB_USER_VIZ/visualization.waveform"
+    ["visualization.goom"]="https://github.com/$GITHUB_USER_VIZ/visualization.goom"
+    ["visualization.spectrum"]="https://github.com/$GITHUB_USER_VIZ/visualization.spectrum"
+    ["visualization.projectm"]="https://github.com/$GITHUB_USER_VIZ/visualization.projectm"
+    ["visualization.fishbmc"]="https://github.com/$GITHUB_USER_VIZ/visualization.fishbmc"
+    ["visualization.shadertoy"]="https://github.com/$GITHUB_USER_VIZ/visualization.shadertoy"
     #["gameclient.snes9x"]="https://github.com/$GITHUB_USER/gameclient.snes9x"
 "
 
 SCR_ADDONS="
-    ["screensavers.rsxs"]="https://github.com/$GITHUB_USER/screensavers.rsxs"
+    ["screensavers.rsxs"]="https://github.com/$GITHUB_USER_VIZ/screensavers.rsxs"
 "
 
 PVR_ADDONS="
@@ -85,6 +86,7 @@ PVR_ADDONS="
     ["pvr.dvblink"]="https://github.com/$GITHUB_USER_PVR/pvr.dvblink"
     ["pvr.vbox"]="https://github.com/$GITHUB_USER_PVR/pvr.vbox"
     ["pvr.stalker"]="https://github.com/$GITHUB_USER_PVR/pvr.stalker"
+    ["pvr.hdhomerun"]="https://github.com/$GITHUB_USER_PVR/pvr.hdhomerun"
 "
 
 eval "declare -A ALL_ADDONS=(
@@ -97,6 +99,7 @@ declare -A PPAS=(
     ["stable"]='ppa:team-xbmc/ppa'
     ["wsnipex-nightly"]='ppa:wsnipex/kodi-git'
     ["wsnipex-xbmc-addons-unstable"]='ppa:wsnipex/xbmc-addons-unstable'
+    ["wsnipex-fernet-master"]='ppa:wsnipex/xbmc-fernetmenta-master'
 )
 
 
