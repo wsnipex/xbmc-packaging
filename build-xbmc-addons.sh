@@ -34,7 +34,7 @@ CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 GITHUB_USER=${GITHUB_USER:-"xbmc"}
 GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
 GITHUB_USER_VIZ=${GITHUB_USER_VIZ:-"notspiff"}
-#META_REPO=${META_REPO:-"https://github.com/cptspiff/xbmc-visualizations"}
+META_REPO=${META_REPO:-"https://github.com/xbmc/repo-binary-addons"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
 
@@ -102,6 +102,7 @@ declare -A PPAS=(
     ["wsnipex-fernet-master"]='ppa:wsnipex/xbmc-fernetmenta-master'
 )
 
+declare -A ADDON_REVS
 
 #------------------------------------------------------------------------------------------------------------#
 
@@ -161,12 +162,19 @@ function checkEnv {
 function getAllAddons {
     local name
     local url
+    local rev
 
-    wget -T 10 -t 5 $META_REPO/raw/master/.gitmodules -O addon-list
-    while read -r name url
+    wget $META_REPO/archive/${BRANCH}.tar.gz && tar xzvf ${BRANCH}.tar.gz
+    while read FILE
     do
-       ALL_ADDONS[$name]=$url
-    done < <(cat addon-list  | paste - - - | awk '{gsub("git:", "https:"); print $5, $8}')
+        if [ "$(basename $FILE)" != platforms.txt ]
+        then
+            read -r name url rev < $FILE
+        else
+            grep -Ewq "linux|all" $FILE && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev
+        fi
+    done < <(find $(basename $META_REPO)* -name "*.txt")
+
 
     ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
 }
@@ -180,11 +188,12 @@ function prepareBuild {
         echo "\n#-------------------------------------------------------#"
         echo "INFO: building $addon"
         url=${ALL_ADDONS["$addon"]}
+        [ -n "${ADDON_REVS["$addon"]}" ] && rev=${ADDON_REVS["$addon"]} || rev=${BRANCH}
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
-        wget -T 10 -t 5 $url/archive/${BRANCH}.tar.gz
-        ! [ -r ${BRANCH}.tar.gz ] && echo "ERROR: download of ${BRANCH}.tar.gz failed" && continue
-        tar xzf ${BRANCH}.tar.gz
+        wget -T 10 -t 5 $url/archive/${rev}.tar.gz
+        ! [ -r ${rev}.tar.gz ] && echo "ERROR: download of ${rev}.tar.gz failed" && continue
+        tar xzf ${rev}.tar.gz
         if [[ "$CREATE_ZIP" == "True" ]]
         then
             createZipPackages
