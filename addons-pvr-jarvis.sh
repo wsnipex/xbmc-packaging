@@ -6,6 +6,6 @@ TAG=${TAG:-"1"} \
 BRANCH="Jarvis" \
 DISTS=${DISTS:-"xenial wily vivid trusty"} \
 PPA_UPLOAD="True" \
-PPA="unstable" \
+PPA="stable" \
 ./build-xbmc-addons.sh
 
