@@ -164,6 +164,9 @@ function getAllAddons {
     local url
     local rev
 
+    rm -r ${BRANCH}.tar.gz 
+    [ -d $(basename $META_REPO)* ] && rm -rf $(basename $META_REPO)*
+
     wget $META_REPO/archive/${BRANCH}.tar.gz && tar xzvf ${BRANCH}.tar.gz
     while read FILE
     do
