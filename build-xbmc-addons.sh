@@ -174,7 +174,7 @@ function getAllAddons {
         then
             read -r name url rev < $FILE
         else
-            grep -Ewq "linux|all" $FILE && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev
+            [ "$GITHUB_USER" == "xbmc" ] && grep -Ewq "linux|all" $FILE && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev || :
         fi
     done < <(find $(basename $META_REPO)* -name "*.txt")
 
@@ -210,9 +210,9 @@ function prepareBuild {
                 orig=$(echo ${PPAS["$PPA"]} | sed -e 's%/%/+archive/%' -e 's%ppa:%https://launchpad.net/~%')
                 wget -T 10 -t 5 ${orig}/+files/${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
             else
-                mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+                mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz || mv ${rev}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
             fi
-            cd ${addon}-${BRANCH} 
+            cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]}
             sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
             buildDebianPackages
             [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
@@ -240,13 +240,20 @@ function getPackageDetails {
         return
     fi
 
-    PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
-    addonxml=$(find ${addon}-${BRANCH} -name addon.xml.in)
-    [ -z $addonxml ] && addonxml=$(find ${addon}-${BRANCH} -name addon.xml)
+    if [ -f ${addon}-${BRANCH} ]
+    then
+        PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in) 
+        addonxml=$(find ${addon}-${BRANCH} -name addon.xml.in)
+    else
+        PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-*/debian/changelog.in)
+        addonxml=$(find ${addon}-* -name addon.xml.in)
+    fi
+    [ -z ${addonxml} ] && addonxml=$(find ${addon}-* -name addon.xml)
+
     if [ -f ${addonxml} ]
     then
         PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addonxml})
-    elif [ -n "$addonxml" ]
+    elif [ -n "${addonxml}" ]
     then
         # some addons don't follow the file system structure 100%, try our best to find an addon.xml
         PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); VER=$2} END {print VER}' ${addon}-${BRANCH}/${addon:0:5}*/addon.xml)
