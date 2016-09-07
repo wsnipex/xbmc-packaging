@@ -168,15 +168,18 @@ function getAllAddons {
     [ -d $(basename $META_REPO)* ] && rm -rf $(basename $META_REPO)*
 
     wget $META_REPO/archive/${BRANCH}.tar.gz && tar xzvf ${BRANCH}.tar.gz
-    while read FILE
+
+    TXTFILES=$(find $(basename $META_REPO)* -name "*.txt")
+    for FILE in $TXTFILES
     do
         if [ "$(basename $FILE)" != platforms.txt ]
         then
             read -r name url rev < $FILE
+            echo "name: $name - url: $url - rev: $rev"
         else
-            [ "$GITHUB_USER" == "xbmc" ] && grep -Ewq "linux|all" $FILE && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev || :
+            [ "$GITHUB_USER" == "xbmc" ] && { ! grep -Ewq '!linux' $FILE || grep -Ewq "linux|all" $FILE ; } && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev || echo "skipping $name"
         fi
-    done < <(find $(basename $META_REPO)* -name "*.txt")
+    done
 
 
     ADDONS=${ADDONS:-${!ALL_ADDONS[@]}}
