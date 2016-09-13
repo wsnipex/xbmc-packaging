@@ -34,6 +34,7 @@ CLEANUP_AFTER=${CLEANUP_AFTER:-"False"}
 GITHUB_USER=${GITHUB_USER:-"xbmc"}
 GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
 GITHUB_USER_VIZ=${GITHUB_USER_VIZ:-"notspiff"}
+GITHUB_USER_GAME=${GITHUB_USER_GAME:-"kodi-game"}
 META_REPO=${META_REPO:-"https://github.com/xbmc/repo-binary-addons"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
@@ -89,8 +90,12 @@ PVR_ADDONS="
     ["pvr.hdhomerun"]="https://github.com/$GITHUB_USER_PVR/pvr.hdhomerun"
 "
 
+GAME_ADDONS="
+    ["peripheral.joystick"]="https://github.com/$GITHUB_USER_GAME/peripheral.joystick"
+"
+
 eval "declare -A ALL_ADDONS=(
-    $PVR_ADDONS $AUDIO_ADDONS $SCR_ADDONS $VIS_ADDONS ["kodi-platform"]="https://github.com/$GITHUB_USER/kodi-platform"
+    $PVR_ADDONS $AUDIO_ADDONS $SCR_ADDONS $VIS_ADDONS $GAME_ADDONS ["kodi-platform"]="https://github.com/$GITHUB_USER/kodi-platform"
 )"
 
 declare -A PPAS=(
