@@ -38,6 +38,7 @@ GITHUB_USER_GAME=${GITHUB_USER_GAME:-"kodi-game"}
 META_REPO=${META_REPO:-"https://github.com/xbmc/repo-binary-addons"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
+USE_MULTIARCH=${USE_MULTIARCH:-"False"}
 
 # Define a default list to cope with addons not yet in the meta repo.
 # The ones existing in the meta repo will overwrite the defaults
@@ -222,10 +223,17 @@ function prepareBuild {
             fi
             cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]}
             sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
+            [[ "$USE_MULTIARCH" == "True" ]] && patchMultiArch
             buildDebianPackages
             [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
         fi
     done
+}
+
+function patchMultiArch {
+    install_file="$(ls debian/*.install 2>/dev/null | head -1)" 
+    [ -f $install_file ] && cat > $install_file <<< 'usr/lib
+usr/share'
 }
 
 function createZipPackages {

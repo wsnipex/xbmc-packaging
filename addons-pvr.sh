@@ -5,8 +5,9 @@ ADDONS_TO_BUILD="pvr" \
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH=${BRANCH:-"master"} \
-DISTS=${DISTS:-"xenial wily vivid trusty"} \
+DISTS=${DISTS:-"yakkety xenial wily vivid trusty"} \
 PPA_UPLOAD="True" \
 PPA=${PPA:-"nightly"} \
+USE_MULTIARCH="True" \
 ./build-xbmc-addons.sh
 
