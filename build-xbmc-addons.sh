@@ -218,9 +218,9 @@ function prepareBuild {
             else
                 mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz || mv ${rev}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
             fi
-            cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]}
+            cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]} || cd ${addon}-*
             sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
-            [[ "$USE_MULTIARCH" == "True" ]] && patchMultiArch
+            [[ "$USE_MULTIARCH" == "True" ]] && [ "${addon}" != "kodi-platform" ] && patchMultiArch
             buildDebianPackages
             [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
         fi

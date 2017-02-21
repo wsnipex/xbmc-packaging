@@ -4,7 +4,7 @@
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH=${BRANCH:-"master"} \
-DISTS=${DISTS:-"yakkety xenial wily vivid trusty"} \
+DISTS=${DISTS:-"yakkety xenial vivid trusty"} \
 PPA_UPLOAD="True" \
 PPA=${PPA:-"nightly"} \
 USE_MULTIARCH="True" \
