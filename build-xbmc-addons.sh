@@ -35,6 +35,7 @@ GITHUB_USER=${GITHUB_USER:-"xbmc"}
 GITHUB_USER_PVR=${GITHUB_USER_PVR:-"kodi-pvr"}
 GITHUB_USER_VIZ=${GITHUB_USER_VIZ:-"notspiff"}
 GITHUB_USER_GAME=${GITHUB_USER_GAME:-"kodi-game"}
+USE_META_REPO=${USE_META_REPO:-"True"}
 META_REPO=${META_REPO:-"https://github.com/xbmc/repo-binary-addons"}
 ADDON_FILTER=${ADDON_FILTER:-"visualization.milkdrop gameclient.snes9x"}
 ADDONS_TO_BUILD=${ADDONS_TO_BUILD:-"all"}
@@ -354,7 +355,7 @@ then
 fi
 
 checkEnv
-getAllAddons
+[ "$USE_META_REPO" == "True" ] && getAllAddons
 prepareBuild
 [[ "$CLEANUP_AFTER" == "True" ]] && [[ $UPLOAD_DONE -eq 0 ]] && cleanup
 
