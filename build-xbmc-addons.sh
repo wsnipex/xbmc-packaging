@@ -182,7 +182,6 @@ function getAllAddons {
     do
         PLAT=$(dirname $FILE)/platforms.txt
         read -r name url rev < $FILE
-        echo "name: $name - url: $url - rev: $rev - platform: $PLAT"
         [ "$GITHUB_USER" == "xbmc" ] && { ! grep -Ewq '!linux' $PLAT || grep -Ewq "linux|all" $PLAT ; } && ALL_ADDONS[$name]=$url && ADDON_REVS[$name]=$rev || echo "skipping $name"
     done
 
@@ -213,13 +212,23 @@ function prepareBuild {
             createTgzPackages
         else
             getPackageDetails
+
+            # check if file already exists in the PPA
+            if $BINDIR/check-launchpad-packages.py ${PPAS["$PPA"]} -s ${PACKAGENAME} | grep "${PACKAGEVERSION}-${TAG}"
+            then
+                echo "${PACKAGENAME}_${PACKAGEVERSION}-${TAG} already exists in PPA, skipping build"
+                continue
+            fi
+
             if [[ "$REBUILD" == "True" ]]
             then
                 orig=$(echo ${PPAS["$PPA"]} | sed -e 's%/%/+archive/%' -e 's%ppa:%https://launchpad.net/~%')
-                wget -T 10 -t 5 ${orig}/+files/${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
+                orig_url="${orig}/+files/${PACKAGENAME}_${PACKAGEVERSION}.orig"
+                wget -T 10 -t 5 {orig_url}.tar.gz || wget -q -T 10 --spider ${orig_url}.tar.xz
             else
                 mv ${BRANCH}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz || mv ${rev}.tar.gz ${PACKAGENAME}_${PACKAGEVERSION}.orig.tar.gz
             fi
+
             cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]} || cd ${addon}-*
             sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
             [[ "$USE_MULTIARCH" == "True" ]] && [ "${addon}" != "kodi-platform" ] && patchMultiArch
@@ -354,6 +363,8 @@ then
     usage
     exit
 fi
+
+BINDIR=$(cd $(dirname $0); pwd)
 
 checkEnv
 [ "$USE_META_REPO" == "True" ] && getAllAddons
