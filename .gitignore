@@ -1,3 +1,4 @@
 xbmc/
+debian/changelog
 debian/control
 debian/rules

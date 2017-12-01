@@ -90,6 +90,7 @@ PVR_ADDONS="
     ["pvr.vbox"]="https://github.com/$GITHUB_USER_PVR/pvr.vbox"
     ["pvr.stalker"]="https://github.com/$GITHUB_USER_PVR/pvr.stalker"
     ["pvr.hdhomerun"]="https://github.com/$GITHUB_USER_PVR/pvr.hdhomerun"
+    ["pvr.zattoo"]="https://github.com/$GITHUB_USER_PVR/pvr.zattoo"
 "
 
 GAME_ADDONS="
