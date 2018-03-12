@@ -214,11 +214,11 @@ function prepareBuild {
             getPackageDetails
 
             # check if file already exists in the PPA
-            if $BINDIR/check-launchpad-packages.py ${PPAS["$PPA"]} -s ${PACKAGENAME} | grep "${PACKAGEVERSION}-${TAG}"
-            then
-                echo "${PACKAGENAME}_${PACKAGEVERSION}-${TAG} already exists in PPA, skipping build"
-                continue
-            fi
+            #if $BINDIR/check-launchpad-packages.py ${PPAS["$PPA"]} -s ${PACKAGENAME} | grep "${PACKAGEVERSION}-${TAG}"
+            #then
+            #    echo "${PACKAGENAME}_${PACKAGEVERSION}-${TAG} already exists in PPA, skipping build"
+            #    continue
+            #fi
 
             if [[ "$REBUILD" == "True" ]]
             then
@@ -272,7 +272,7 @@ function getPackageDetails {
         PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-*/debian/changelog.in)
         addonxml=$(find ${addon}-* -name addon.xml.in)
     fi
-    [ -z ${addonxml} ] && addonxml=$(find ${addon}-* -name addon.xml)
+    [ -z "${addonxml}" ] && addonxml=$(find ${addon}-* -name addon.xml)
 
     if [ -f ${addonxml} ]
     then
@@ -292,6 +292,13 @@ function getPackageDetails {
 function buildDebianPackages {
     for dist in $DISTS
     do
+        # check if file already exists in the PPA
+        if $BINDIR/check-launchpad-packages.py ${PPAS["$PPA"]} -s ${PACKAGENAME} -d ${dist} | grep "${PACKAGEVERSION}-${TAG}"
+        then
+            echo "${PACKAGENAME}_${PACKAGEVERSION}-${TAG} already exists in PPA, skipping build"
+            continue
+        fi
+
         sed "s/#DIST#/${dist}/g" debian/changelog.tmp > debian/changelog
         [[ -r ${addon}/changelog.txt ]] && dch -a $(cat ${addon}/changelog.txt) || dch -a "no upstream changelog available"
         dch --release -u $URGENCY ""
