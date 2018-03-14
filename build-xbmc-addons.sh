@@ -197,7 +197,7 @@ function prepareBuild {
         cd $WORK_DIR || exit 1
         echo "\n#-------------------------------------------------------#"
         echo "INFO: building $addon"
-        url=${ALL_ADDONS["$addon"]}
+        [ -n "${ALL_ADDONS["$addon"]}" ] && url=${ALL_ADDONS["$addon"]} || url="https://github.com/$GITHUB_USER/$addon"
         [ -n "${ADDON_REVS["$addon"]}" ] && rev=${ADDON_REVS["$addon"]} || rev=${BRANCH}
         [ -d ${addon}.tmp ] && rm -rf ${addon}.tmp
         mkdir ${addon}.tmp && cd ${addon}.tmp || exit 1
