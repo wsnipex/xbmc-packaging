@@ -230,7 +230,13 @@ function prepareBuild {
             fi
 
             cd ${addon}-${BRANCH} || cd ${addon}-${ADDON_REVS[$addon]} || cd ${addon}-*
-            sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
+            if [[ -f debian/changelog.in ]]
+            then
+              sed -e "s/#PACKAGEVERSION#/${PACKAGEVERSION}/g" -e "s/#TAGREV#/${TAG}/g" debian/changelog.in > debian/changelog.tmp
+            else
+              echo "Error: debian/changelog.in for $addon not found, skipping"
+              continue
+            fi
             [[ "$USE_MULTIARCH" == "True" ]] && [ "${addon}" != "kodi-platform" ] && patchMultiArch
             buildDebianPackages
             [[ "$PPA_UPLOAD" == "True" ]] && cd .. && uploadPkg
@@ -264,17 +270,23 @@ function getPackageDetails {
         return
     fi
 
-    if [ -f ${addon}-${BRANCH} ]
+    if [ -f "${addon}-${BRANCH}" ]
     then
-        PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in) 
-        addonxml=$(find ${addon}-${BRANCH} -name addon.xml.in)
+        if [ -f ${addon}-*/debian/changelog.in ]
+        then
+          PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-${BRANCH}/debian/changelog.in)
+          addonxml=$(find ${addon}-${BRANCH} -name addon.xml.in)
+        fi
     else
-        PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-*/debian/changelog.in)
-        addonxml=$(find ${addon}-* -name addon.xml.in)
+        if [ -f ${addon}-*/debian/changelog.in ]
+        then
+          PACKAGENAME=$(awk '{if(NR==1){ print $1}}' ${addon}-*/debian/changelog.in)
+          addonxml=$(find ${addon}-* -name addon.xml.in)
+        fi
     fi
     [ -z "${addonxml}" ] && addonxml=$(find ${addon}-* -name addon.xml)
 
-    if [ -f ${addonxml} ]
+    if [ -r "${addonxml}" ]
     then
         PACKAGEVERSION=$(awk -F'=' '!/<?xml/ && /version/ && !/>/ {gsub("\"",""); print $2}' ${addonxml})
     elif [ -n "${addonxml}" ]
@@ -286,7 +298,7 @@ function getPackageDetails {
         PACKAGEVERSION=$(grep -E "PROPERTIES.*VERSION" ${addon}-${BRANCH}/CMakeLists.txt | grep -oE "[0-9\.]+")
     fi
 
-    [[ -z $PACKAGEVERSION ]] && echo "ERROR: could not determine version of $addon" && break
+    [[ -z $PACKAGEVERSION ]] && echo "ERROR: could not determine version of $addon" && continue
 }
 
 function buildDebianPackages {
