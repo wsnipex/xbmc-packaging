@@ -5,7 +5,7 @@
 CLEANUP_AFTER="True" \
 TAG=${TAG:-"1"} \
 BRANCH="Krypton" \
-DISTS=${DISTS:-"artful zesty xenial trusty"} \
+DISTS=${DISTS:-"bionic artful xenial trusty"} \
 PPA_UPLOAD="True" \
 PPA=${PPA:-"stable"} \
 USE_MULTIARCH="True" \
